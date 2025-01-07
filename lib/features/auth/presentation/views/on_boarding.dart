@@ -1,4 +1,3 @@
-
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/functions/localization_controller.dart';
 import 'package:TaklyAPP/core/functions/localization_service.dart';
@@ -72,6 +71,8 @@ class OnboardingScreen extends StatelessWidget {
                 DotIndicator(isActive: false),
               ],
             ),
+            const SizedBox(height: 20),
+            MyButton(name: 'next'.tr, onPressed: () async {}),
             const Spacer(),
           ],
         ),
@@ -123,7 +124,7 @@ class OnboardingScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             MyButton(
-                name: 'next'.tr,
+                name: 'Skip'.tr,
                 onPressed: () async {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();

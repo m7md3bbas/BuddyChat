@@ -47,7 +47,7 @@ class BuddyChat extends StatefulWidget {
 
 class _BuddyChatState extends State<BuddyChat> {
   @override
-  void initState() {
+  void initState() {  
     super.initState();
     initializaition();
   }
