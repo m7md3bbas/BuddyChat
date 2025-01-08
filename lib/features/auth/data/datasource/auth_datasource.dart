@@ -1,3 +1,4 @@
+import 'package:TaklyAPP/core/failures/auth_error.dart';
 import 'package:TaklyAPP/features/auth/data/model/user.dart';
 import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,17 +7,18 @@ import 'package:get/get.dart';
 
 class AuthDatasource {
   static AuthDatasource? _instance;
-  AuthDatasource._();
+  AuthDatasource._({required this.errorHandler});
 
   static AuthDatasource getInstance() {
-    _instance ??= AuthDatasource._();
+    _instance ??=
+        AuthDatasource._(errorHandler: ErrorHandler.getErrorHandler());
     return _instance!;
   }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-
-   Stream<UserEntity?> get authStateChange {
+  final ErrorHandler errorHandler;
+  Stream<UserEntity?> get authStateChange {
     return _firebaseAuth.authStateChanges().map((user) {
       return user != null ? Users.fromFirebase(user) : null;
     });
@@ -35,7 +37,8 @@ class AuthDatasource {
         Get.snackbar("Error", "Login failed");
       }
     } on FirebaseAuthException catch (e) {
-      Get.snackbar("Error", e.message ?? "An error occurred during login");
+      var error = errorHandler.handleLoginError(e.code);
+      Get.snackbar("Error", error);
     }
     return null;
   }
@@ -63,8 +66,8 @@ class AuthDatasource {
         Get.snackbar("Error", "Registration failed");
       }
     } on FirebaseAuthException catch (e) {
-      Get.snackbar(
-          "Error", e.message ?? "An error occurred during registration");
+      var error = errorHandler.handleRegisterError(e.code);
+      Get.snackbar("Error", error);
     }
     return null;
   }

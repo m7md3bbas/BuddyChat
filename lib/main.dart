@@ -12,13 +12,12 @@ import 'package:flutter_bloc/flutter_bloc.dart' as bloc; // Alias added
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  Future.delayed(const Duration(seconds: 1), () {
+  Future.delayed(const Duration(milliseconds: 500), () {
     FlutterNativeSplash.remove();
     Get.find<AuthCubit>().checkAuth();
   });

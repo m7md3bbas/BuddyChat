@@ -43,7 +43,7 @@ dependencies:
   flutter_localization: ^0.2.3
   flutter_localizations:
     sdk: flutter
-  flutter_native_splash: ^2.4.3
+  flutter_native_splash: ^2.4.4
   flutter_svg: ^2.0.16
   font_awesome_flutter: ^10.8.0
   get: ^4.6.6
@@ -95,9 +95,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-flutter_native_splash:
-  color: "#FFFFFF" # Background color
-  image: "assets/images/SplashScreen_light.png" # Path to your custom image
-  android: true
-  ios: true
-  web: false
+
