@@ -2,6 +2,7 @@ import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
 import 'package:TaklyAPP/features/auth/presentation/manager/cubit/auth_cubit.dart';
+import 'package:TaklyAPP/features/auth/presentation/views/widgets/show_password.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -48,12 +49,13 @@ class _LoginState extends State<Login> {
                   child: Center(
                     child: Column(
                       children: [
-                        const SizedBox(
-                          height: 50,
+                        SizedBox(
+                          height: context.height * 0.15,
                         ),
                         Icon(
                           Icons.chat,
-                          size: 60,
+                          size:
+                              Get.find<FontSizeController>().fontSize.value * 5,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(
@@ -93,44 +95,7 @@ class _LoginState extends State<Login> {
                         const SizedBox(
                           height: 20,
                         ),
-                        Row(
-                          children: [
-                            ValueListenableBuilder<bool>(
-                              valueListenable: isObscuredNotifier,
-                              builder: (context, isObscured, child) {
-                                return Checkbox(
-                                  value: !isObscured,
-                                  onChanged: (value) {
-                                    isObscuredNotifier.value = !isObscured;
-                                  },
-                                );
-                              },
-                            ),
-                            const Text('Show Password'),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                Get.toNamed('/forgetPassword');
-                              },
-                              child: GestureDetector(
-                                onTap: () => Get.toNamed('/forgetPassword'),
-                                child: Obx(() {
-                                  return Text(
-                                    'forgetPassword'.tr,
-                                    style: TextStyle(
-                                      fontSize: Get.find<FontSizeController>()
-                                          .fontSize
-                                          .value,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  );
-                                }),
-                              ),
-                            )
-                          ],
-                        ),
+                        ShowPassword(isLogin: true,isObscuredNotifier: isObscuredNotifier),
                         const SizedBox(
                           height: 20,
                         ),
@@ -194,12 +159,8 @@ class _LoginState extends State<Login> {
     );
   }
 
-  void unfocusKeyboard() {
-    FocusScope.of(context).unfocus();
-  }
-
   void login() {
-    unfocusKeyboard();
+    FocusScope.of(context).unfocus();
 
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       cubit.loginUser(

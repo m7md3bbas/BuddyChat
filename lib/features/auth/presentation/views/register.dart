@@ -5,30 +5,29 @@ import 'package:TaklyAPP/core/validtors/password_validators.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
 import 'package:TaklyAPP/features/auth/presentation/manager/cubit/auth_cubit.dart';
+import 'package:TaklyAPP/features/auth/presentation/views/widgets/show_password.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 class Register extends StatefulWidget {
-  const Register({super.key,});
+  const Register({
+    super.key,
+  });
 
   @override
   State<Register> createState() => _RegisterState();
 }
 
 class _RegisterState extends State<Register> {
-  final fnameController = TextEditingController();
-
-  final lnameController = TextEditingController();
-
-  final emailController = TextEditingController();
-
-  final passwordController = TextEditingController();
-
-  final confirmPasswordController = TextEditingController();
-  bool isloading = false;
-  bool isobscure = true;
- var cubit = Get.find<AuthCubit>(); 
+  final TextEditingController fnameController = TextEditingController();
+  final TextEditingController lnameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final ValueNotifier<bool> isObscuredNotifier = ValueNotifier<bool>(true);
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  var cubit = Get.find<AuthCubit>();
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -38,7 +37,7 @@ class _RegisterState extends State<Register> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: BlocBuilder<AuthCubit, AuthState>(
-          bloc:cubit,
+          bloc: cubit,
           builder: (context, state) {
             return SafeArea(
               child: Center(
@@ -48,9 +47,13 @@ class _RegisterState extends State<Register> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        SizedBox(
+                          height: context.height * 0.0045,
+                        ),
                         Icon(
                           Icons.chat,
-                          size: 60,
+                          size:
+                              Get.find<FontSizeController>().fontSize.value * 5,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(
@@ -107,35 +110,41 @@ class _RegisterState extends State<Register> {
                           children: [
                             Expanded(
                               flex: 5,
-                              child: MyTextField(
-                                  controller: passwordController,
-                                  obscure: isobscure,
-                                  type: "password".tr),
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: isObscuredNotifier,
+                                builder: (context, isObscured, child) {
+                                  return MyTextField(
+                                    type: 'Password',
+                                    controller: passwordController,
+                                    obscure: isObscured,
+                                  );
+                                },
+                              ),
                             ),
                             const Spacer(
                               flex: 1,
                             ),
                             Expanded(
                               flex: 5,
-                              child: MyTextField(
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      !isobscure
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        isobscure = !isobscure;
-                                      });
-                                    },
-                                  ),
-                                  controller: confirmPasswordController,
-                                  obscure: isobscure,
-                                  type: "confirmPassword".tr),
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: isObscuredNotifier,
+                                builder: (context, isObscured, child) {
+                                  return MyTextField(
+                                    type: 'confirm Password',
+                                    controller: confirmPasswordController,
+                                    obscure: isObscured,
+                                  );
+                                },
+                              ),
                             ),
                           ],
                         ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ShowPassword(
+                            isLogin: false,
+                            isObscuredNotifier: isObscuredNotifier),
                         const SizedBox(
                           height: 20,
                         ),
@@ -166,8 +175,8 @@ class _RegisterState extends State<Register> {
                               width: 5,
                             ),
                             GestureDetector(
-                              onTap:(){
-                                Get.toNamed("/");
+                              onTap: () {
+                                Get.back();
                               },
                               child: Obx(() {
                                 return Text(
@@ -197,11 +206,6 @@ class _RegisterState extends State<Register> {
   }
 
   void register() async {
-    unfocusKeyboard();
-    setState(() {
-      isloading = true;
-    });
-
     final String fullName =
         "${fnameController.text.trim()} ${lnameController.text.trim()}";
 
@@ -210,10 +214,7 @@ class _RegisterState extends State<Register> {
         PasswordValidators.validatePassword(passwordController.text.trim()) !=
             null ||
         NameValidators.validateName(fullName) != null) {
-      setState(() {
-        isloading = false;
-      });
-      return; // Stop execution if any validation fails
+      return;
     }
 
     // Step 2: Check if all fields are filled
@@ -230,37 +231,21 @@ class _RegisterState extends State<Register> {
               email: emailController.text.trim(),
               password: passwordController.text.trim(),
               name: fullName);
-          // Optionally clear the controllers here after successful registration
           emailController.clear();
           passwordController.clear();
           confirmPasswordController.clear();
           fnameController.clear();
           lnameController.clear();
         } catch (e) {
-          // Handle errors during registration
           Get.snackbar("Error", "An error occurred during registration.");
-          // Log error for debugging
         }
       } else {
-        // Passwords don't match
         passwordController.clear();
         confirmPasswordController.clear();
         Get.snackbar("Error", "Passwords do not match");
       }
     } else {
-      // One or more fields are empty
       Get.snackbar("Error", "Please fill in all fields");
     }
-
-    // Step 4: Reset loading state after registration attempt
-    if (mounted) {
-      setState(() {
-        isloading = false;
-      });
-    }
-  }
-
-  void unfocusKeyboard() {
-    FocusScope.of(context).unfocus();
   }
 }
