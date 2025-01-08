@@ -1,7 +1,6 @@
 // ignore_for_file: overridden_fields, annotate_overrides
 
 import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Users extends UserEntity {
@@ -29,9 +28,6 @@ class Users extends UserEntity {
     return Users(
       email: user.email!,
       id: user.uid,
-      userName: user.displayName,
-      phone: user.phoneNumber,
-      profilePic: user.photoURL,
     );
   }
 
@@ -40,9 +36,6 @@ class Users extends UserEntity {
     return {
       'email': email,
       'id': id,
-      'userName': userName,
-      'phone': phone,
-      'profilePic': profilePic,
     };
   }
 }

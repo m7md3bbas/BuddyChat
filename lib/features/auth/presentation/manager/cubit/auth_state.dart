@@ -20,7 +20,7 @@ final class AuthFailure extends AuthState {
 }
 
 final class Authenticated extends AuthState {
-  final UserEntity userEntity;
+  final UserEntity? userEntity;
 
   Authenticated({required this.userEntity});
 }

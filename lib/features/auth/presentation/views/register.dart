@@ -1,7 +1,4 @@
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
-import 'package:TaklyAPP/core/validtors/email_validator.dart';
-import 'package:TaklyAPP/core/validtors/name_validator.dart';
-import 'package:TaklyAPP/core/validtors/password_validators.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
 import 'package:TaklyAPP/features/auth/presentation/manager/cubit/auth_cubit.dart';
@@ -208,14 +205,6 @@ class _RegisterState extends State<Register> {
   void register() async {
     final String fullName =
         "${fnameController.text.trim()} ${lnameController.text.trim()}";
-
-    // Step 1: Validate fields
-    if (EmailValidators.validateEmail(emailController.text.trim()) != null ||
-        PasswordValidators.validatePassword(passwordController.text.trim()) !=
-            null ||
-        NameValidators.validateName(fullName) != null) {
-      return;
-    }
 
     // Step 2: Check if all fields are filled
     if (emailController.text.isNotEmpty &&

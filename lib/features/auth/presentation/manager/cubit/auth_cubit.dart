@@ -46,7 +46,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(Authloading());
     final result = await loginUsecase(email: email, password: password);
     result.fold((l) => emit(AuthFailure(failure: l)),
-        (r) => emit(Authenticated(userEntity: r!)));
+        (r) => emit(Authenticated(userEntity: r)));
   }
 
   Future<void> registerUser(
@@ -80,5 +80,11 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthFailure(failure: GeneralFailure(e.toString())));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _authStateSubscrition.cancel();
+    return super.close();
   }
 }
