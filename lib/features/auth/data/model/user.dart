@@ -2,15 +2,16 @@
 
 import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class User extends UserEntity {
+class Users extends UserEntity {
   final String email;
   final String id;
   final String? userName;
   final String? phone;
   final String? profilePic;
 
-  User({
+  Users({
     required this.email,
     required this.id,
     this.userName,
@@ -24,15 +25,13 @@ class User extends UserEntity {
           profilePic: profilePic,
         );
 
-  /// Factory constructor to map Firestore data to `User`
-  factory User.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return User(
-      email: data['email'] as String,
-      id: data['id'] as String,
-      userName: data['userName'] as String?,
-      phone: data['phone'] as String?,
-      profilePic: data['profilePic'] as String?,
+  factory Users.fromFirebase(User user) {
+    return Users(
+      email: user.email!,
+      id: user.uid,
+      userName: user.displayName,
+      phone: user.phoneNumber,
+      profilePic: user.photoURL,
     );
   }
 

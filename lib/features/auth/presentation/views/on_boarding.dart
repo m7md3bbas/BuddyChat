@@ -5,7 +5,6 @@ import 'package:TaklyAPP/core/widgets/custom_inkwell.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/simple_inkwell.dart';
 import 'package:TaklyAPP/core/widgets/theme_button.dart';
-import 'package:TaklyAPP/features/auth/presentation/views/auth_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -129,7 +128,7 @@ class OnboardingScreen extends StatelessWidget {
                   SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   prefs.setBool('hasSeenOnboarding', true);
-                  Get.to(() => const AuthGate());
+                  Get.toNamed(('/login'));
                 }),
             const Spacer(),
           ],

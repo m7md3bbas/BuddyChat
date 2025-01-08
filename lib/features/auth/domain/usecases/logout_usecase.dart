@@ -1,9 +1,9 @@
 import 'package:TaklyAPP/features/auth/domain/repoIm/repo_im.dart';
 
 class LogoutUsecase {
-  final RepoIm repoIm;
-  LogoutUsecase(this.repoIm);
+  final AuthRepoIm authRepoIm;
+  LogoutUsecase({required this.authRepoIm});
   Future<void> call() async {
-    await repoIm.logout();
+    await authRepoIm.logout();
   }
 }

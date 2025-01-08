@@ -10,8 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 class Register extends StatefulWidget {
-  const Register({super.key, this.toogleAuthGate});
-  final void Function()? toogleAuthGate;
+  const Register({super.key,});
 
   @override
   State<Register> createState() => _RegisterState();
@@ -29,6 +28,7 @@ class _RegisterState extends State<Register> {
   final confirmPasswordController = TextEditingController();
   bool isloading = false;
   bool isobscure = true;
+ var cubit = Get.find<AuthCubit>(); 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -38,6 +38,7 @@ class _RegisterState extends State<Register> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: BlocBuilder<AuthCubit, AuthState>(
+          bloc:cubit,
           builder: (context, state) {
             return SafeArea(
               child: Center(
@@ -138,7 +139,7 @@ class _RegisterState extends State<Register> {
                         const SizedBox(
                           height: 20,
                         ),
-                        isloading
+                        state is Authloading
                             ? const CircularProgressIndicator()
                             : MyButton(
                                 name: "signUp".tr,
@@ -165,7 +166,9 @@ class _RegisterState extends State<Register> {
                               width: 5,
                             ),
                             GestureDetector(
-                              onTap: widget.toogleAuthGate,
+                              onTap:(){
+                                Get.toNamed("/");
+                              },
                               child: Obx(() {
                                 return Text(
                                   "signIn".tr,
@@ -223,7 +226,7 @@ class _RegisterState extends State<Register> {
       if (passwordController.text == confirmPasswordController.text) {
         try {
           // Register the user
-          await BlocProvider.of<AuthCubit>(context).registerUser(
+          cubit.registerUser(
               email: emailController.text.trim(),
               password: passwordController.text.trim(),
               name: fullName);

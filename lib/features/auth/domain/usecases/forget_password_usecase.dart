@@ -1,10 +1,10 @@
 import 'package:TaklyAPP/features/auth/domain/repoIm/repo_im.dart';
 
 class ForgetPasswordUsecase {
-  final RepoIm repoIm;
+  final AuthRepoIm authRepoIm;
 
-  ForgetPasswordUsecase(this.repoIm);
+  ForgetPasswordUsecase({required this.authRepoIm});
   Future<void> call({required String email}) async {
-    await repoIm.forgetPassword(email:email);
+    await authRepoIm.forgetPassword(email:email);
   }
 }

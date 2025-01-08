@@ -1,20 +1,15 @@
-import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
 import 'package:TaklyAPP/features/auth/presentation/manager/cubit/auth_cubit.dart';
-import 'package:TaklyAPP/features/auth/presentation/views/forget_password.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key, this.toogleAuthGate, this.toForgetPassword});
-
-  final void Function()? toogleAuthGate;
-
-  final void Function()? toForgetPassword;
+  const Login({
+    super.key,
+  });
 
   @override
   State<Login> createState() => _LoginState();
@@ -22,16 +17,16 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final emailController = TextEditingController();
-
+  final ValueNotifier<bool> isObscuredNotifier = ValueNotifier<bool>(true);
   final passwordController = TextEditingController();
-  bool isloading = false;
   bool isobscure = true;
-
+  var cubit = Get.find<AuthCubit>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocBuilder<AuthCubit, AuthState>(
+        bloc: cubit,
         builder: (context, state) {
           if (state is AuthFailure) {
             return Center(
@@ -47,131 +42,148 @@ class _LoginState extends State<Login> {
             );
           } else {
             return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.chat,
-                        size: 60,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(
-                        height: 50,
-                      ),
-                      Obx(() {
-                        return Text(
-                          'signIn'.tr,
-                          style: TextStyle(
-                            fontSize:
-                                Get.find<FontSizeController>().fontSize.value,
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      }),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      MyTextField(
-                          controller: emailController,
-                          obscure: false,
-                          type: "email".tr),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      MyTextField(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              isobscure
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        Icon(
+                          Icons.chat,
+                          size: 60,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        Obx(() {
+                          return Text(
+                            'signIn'.tr,
+                            style: TextStyle(
+                              fontSize:
+                                  Get.find<FontSizeController>().fontSize.value,
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
                             ),
-                            onPressed: () {
-                              setState(() {
-                                isobscure = !isobscure;
-                              });
-                            },
-                          ),
-                          controller: passwordController,
-                          obscure: isobscure,
-                          type: "password".tr),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          GestureDetector(
-                            onTap: () => Get.to(() => BlocProvider(
-                                  create: (context) =>
-                                      CubitConstractor.authConstractorMethod(),
-                                  child: ForgetPasswordPage(),
-                                )),
-                            child: Obx(() {
+                          );
+                        }),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        MyTextField(
+                            controller: emailController,
+                            obscure: false,
+                            type: "email".tr),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: isObscuredNotifier,
+                          builder: (context, isObscured, child) {
+                            return MyTextField(
+                              type: 'Password',
+                              controller: passwordController,
+                              obscure: isObscured,
+                            );
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: [
+                            ValueListenableBuilder<bool>(
+                              valueListenable: isObscuredNotifier,
+                              builder: (context, isObscured, child) {
+                                return Checkbox(
+                                  value: !isObscured,
+                                  onChanged: (value) {
+                                    isObscuredNotifier.value = !isObscured;
+                                  },
+                                );
+                              },
+                            ),
+                            const Text('Show Password'),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                Get.toNamed('/forgetPassword');
+                              },
+                              child: GestureDetector(
+                                onTap: () => Get.toNamed('/forgetPassword'),
+                                child: Obx(() {
+                                  return Text(
+                                    'forgetPassword'.tr,
+                                    style: TextStyle(
+                                      fontSize: Get.find<FontSizeController>()
+                                          .fontSize
+                                          .value,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                }),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        state is Authloading
+                            ? const CircularProgressIndicator()
+                            : MyButton(
+                                name: "signIn".tr,
+                                onPressed: login,
+                              ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Obx(() {
                               return Text(
-                                'forgetPassword'.tr,
+                                'dontHaveAnAccount'.tr,
                                 style: TextStyle(
                                   fontSize: Get.find<FontSizeController>()
                                       .fontSize
                                       .value,
                                   color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
                                 ),
                               );
                             }),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      state is Authloading
-                          ? const CircularProgressIndicator()
-                          : MyButton(
-                              name: "signIn".tr,
-                              onPressed: login,
+                            const SizedBox(
+                              width: 5,
                             ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Obx(() {
-                            return Text(
-                              'dontHaveAnAccount'.tr,
-                              style: TextStyle(
-                                fontSize: Get.find<FontSizeController>()
-                                    .fontSize
-                                    .value,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            );
-                          }),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          GestureDetector(
-                            onTap: widget.toogleAuthGate,
-                            child: Obx(() {
-                              return Text(
-                                'signUp'.tr,
-                                style: TextStyle(
-                                    fontSize: Get.find<FontSizeController>()
-                                        .fontSize
-                                        .value,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontWeight: FontWeight.bold),
-                              );
-                            }),
-                          ),
-                        ],
-                      ),
-                    ],
+                            GestureDetector(
+                              onTap: () {
+                                Get.toNamed('/register');
+                              },
+                              child: Obx(() {
+                                return Text(
+                                  'signUp'.tr,
+                                  style: TextStyle(
+                                      fontSize: Get.find<FontSizeController>()
+                                          .fontSize
+                                          .value,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold),
+                                );
+                              }),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -188,11 +200,9 @@ class _LoginState extends State<Login> {
 
   void login() {
     unfocusKeyboard();
-    setState(() {
-      isloading = true;
-    });
+
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      BlocProvider.of<AuthCubit>(context).loginUser(
+      cubit.loginUser(
           email: emailController.text.trim(),
           password: passwordController.text.trim());
       emailController.clear();
@@ -200,9 +210,5 @@ class _LoginState extends State<Login> {
     } else {
       Get.snackbar("Error", "Please enter all the fields");
     }
-
-    setState(() {
-      isloading = false;
-    });
   }
 }

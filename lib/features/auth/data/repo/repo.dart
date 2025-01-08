@@ -8,4 +8,5 @@ abstract class Repo {
   Future<Either<Failure, UserEntity?>> register({required String email,required String password ,required String name});
   Future<Either<Failure, void>> logout();
   Future<Either<Failure, void>> forgetPassword({required String email});
+  Stream <UserEntity?> get authStateChange;
 }

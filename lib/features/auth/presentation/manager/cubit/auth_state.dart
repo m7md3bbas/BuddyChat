@@ -18,3 +18,10 @@ final class AuthFailure extends AuthState {
 
   AuthFailure({required this.failure});
 }
+
+final class Authenticated extends AuthState {
+  final UserEntity userEntity;
+
+  Authenticated({required this.userEntity});
+}
+final class UnAuthenticated extends AuthState {}

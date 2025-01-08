@@ -1,4 +1,3 @@
-
 import 'package:TaklyAPP/core/validtors/email_validator.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
@@ -9,8 +8,9 @@ import 'package:get/get.dart';
 
 class ForgetPasswordPage extends StatelessWidget {
   ForgetPasswordPage({super.key});
-
-  final emailController = TextEditingController();
+  
+  TextEditingController emailController = TextEditingController();
+  var cubit = Get.find<AuthCubit>();
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +31,7 @@ class ForgetPasswordPage extends StatelessWidget {
         ),
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
+        bloc: cubit,
         listener: (context, state) {
           if (state is AuthSuccess) {
             Get.snackbar(
@@ -79,19 +80,7 @@ class ForgetPasswordPage extends StatelessWidget {
                         ? const CircularProgressIndicator.adaptive()
                         : MyButton(
                             name: "send".tr,
-                            onPressed: () {
-                              final email = emailController.text.trim();
-                              if (email.isNotEmpty &&
-                                  EmailValidators.validateEmail(email) !=
-                                      null) {
-                                context.read<AuthCubit>().forgetPassword(email: email);
-                              } else {
-                                Get.snackbar(
-                                  "Error",
-                                  "Please enter a valid email address",
-                                );
-                              }
-                            },
+                            onPressed: forgetPassword,
                           ),
                   ],
                 ),
@@ -101,5 +90,17 @@ class ForgetPasswordPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void forgetPassword() {
+    final email = emailController.text.trim();
+    if (email.isNotEmpty && EmailValidators.validateEmail(email) != null) {
+      cubit.forgetPassword(email: email);
+    } else {
+      Get.snackbar(
+        "Error",
+        "Please enter a valid email address",
+      );
+    }
   }
 }
