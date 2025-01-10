@@ -36,6 +36,9 @@ class Users extends UserEntity {
     return {
       'email': email,
       'id': id,
+      'userName': userName,
+      'phone': phone,
+      'profilePic': profilePic
     };
   }
 }

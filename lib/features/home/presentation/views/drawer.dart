@@ -1,5 +1,6 @@
 import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
+import 'package:TaklyAPP/features/auth/presentation/views/login.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
 import 'package:TaklyAPP/features/home/presentation/views/widgets/add_image.dart';
 import 'package:TaklyAPP/features/home/presentation/views/widgets/header_fading_drawer.dart';
@@ -78,7 +79,7 @@ class BuildDrawer extends StatelessWidget {
                 );
               }),
               onTap: () {
-                Get.toNamed("/home"); 
+                Get.toNamed("/home");
               },
             ),
             ListTile(
@@ -110,9 +111,12 @@ class BuildDrawer extends StatelessWidget {
                   ),
                 );
               }),
-              onTap: () {
-                FirebaseAuth.instance.signOut(); // Log out user
-                Get.offAllNamed('/login'); // Navigate to login screen
+              onTap: () async {
+                FirebaseAuth.instance.signOut();
+                Future.delayed(const Duration(seconds: 1), () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => const Login()));
+                });
               },
             ),
             const SizedBox(

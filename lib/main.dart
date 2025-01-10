@@ -1,10 +1,11 @@
 import 'package:TaklyAPP/bloc_observer.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/functions/localization_service.dart';
-import 'package:TaklyAPP/core/functions/myroutes.dart';
+import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/core/themes/theme_provider.dart';
-import 'package:TaklyAPP/features/auth/presentation/manager/bindings/auth_binding.dart';
-import 'package:TaklyAPP/features/auth/presentation/manager/cubit/auth_cubit.dart';
+import 'package:TaklyAPP/features/auth/presentation/controller/cubit/auth_cubit.dart';
+import 'package:TaklyAPP/features/auth/presentation/views/login.dart';
+import 'package:TaklyAPP/features/home/presentation/views/home_view.dart';
 import 'package:TaklyAPP/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,6 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   Future.delayed(const Duration(milliseconds: 500), () {
     FlutterNativeSplash.remove();
-    Get.find<AuthCubit>().checkAuth();
   });
 
   await Firebase.initializeApp(
@@ -28,7 +28,7 @@ void main() async {
   bloc.Bloc.observer = MyBlocObserver();
 
   await LocalizationService.loadTranslations();
-
+  setupServiceLocator();
   Get.put(FontSizeController());
   runApp(ChangeNotifierProvider(
       create: (context) => ThemeProvider(), child: const BuddyChat()));
@@ -41,19 +41,34 @@ class BuddyChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      locale: LocalizationService.defaultLocale,
-      translations: LocalizationService(),
-      supportedLocales: LocalizationService().getSupportedLocales(),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      debugShowCheckedModeBanner: false,
-      initialBinding: AuthBinding(),
-      getPages: MyRoutes.myRoutes,
-      theme: Provider.of<ThemeProvider>(context).themeData,
+    return bloc.BlocProvider(
+      create: (context) => locator<AuthCubit>()..checkAuth(),
+      child: GetMaterialApp(
+        locale: LocalizationService.defaultLocale,
+        translations: LocalizationService(),
+        supportedLocales: LocalizationService().getSupportedLocales(),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        debugShowCheckedModeBanner: false,
+        theme: Provider.of<ThemeProvider>(context).themeData,
+        home: bloc.BlocListener<AuthCubit, AuthState>(
+          bloc: locator<AuthCubit>()..checkAuth(),
+          listener: (context, state) {
+            if (state.status == AuthStatus.authenticated) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const HomeView()));
+            }
+            {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const Login()));
+            }
+          },
+          child: const CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 }

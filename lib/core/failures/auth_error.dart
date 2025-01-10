@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 class ErrorHandler{
 
   ErrorHandler._();
@@ -7,54 +9,41 @@ class ErrorHandler{
     return _instance!;
   }
 
-  String handleRegisterError(String error){
-    switch (error) {
-      case "error_invalid_email":
-        error = "Invalid Email Address";
-        break;
-      case "error_too_many_requests":
-        error = "To Many Requests";
-        break;
-      case "error_operation_not_allowed":
-        error = "Cannot Create Account Now Try Again Later";
-        break;
-      case "email-already-in-use":
-        error = "Email Already In Use";
-        break;
+  String getAuthErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return 'The email address is badly formatted.';
+      case 'user-disabled':
+        return 'This user has been disabled. Please contact support.';
+      case 'user-not-found':
+        return 'No user found for that email.';
+      case 'wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'email-already-in-use':
+        return 'The email is already in use by another account.';
+      case 'weak-password':
+        return 'The password is too weak.';
+      case 'operation-not-allowed':
+        return 'This operation is not allowed. Please contact support.';
+      case 'user-token-expired':
+        return 'Your session has expired. Please log in again.';
+      case 'invalid-credential':
+        return 'The provided credentials are incorrect or have expired.';
+      case 'account-exists-with-different-credential':
+        return 'An account already exists with this email but using a different sign-in provider.';
+      case 'requires-recent-login':
+        return 'Please reauthenticate to perform this operation.';
+      case 'app-deleted':
+        return 'The app has been deleted.';
+      case 'network-request-failed':
+        return 'Network request failed. Please check your internet connection.';
+      case 'too-many-requests':
+        return 'Too many requests. Please try again later.';
+      case 'internal-error':
+        return 'An internal error occurred. Please try again later.';
       default:
-        error = error.toString();
+        return 'An unknown error occurred. Please try again later.';
     }
-    return error;
-  }
-
-  String handleLoginError(String error){
-    switch (error) {
-      case "ERROR_WRONG_PASSWORD":
-      case "wrong-password":
-        error = "Wrong email/password combination.";
-        break;
-      case "ERROR_USER_NOT_FOUND":
-      case "user-not-found":
-        error = "No user found with this email.";
-        break;
-      case "ERROR_USER_DISABLED":
-      case "user-disabled":
-        error = "User disabled.";
-        break;
-      case "ERROR_TOO_MANY_REQUESTS":
-      case "operation-not-allowed":
-        error = "Too many requests to log into this account.";
-        break;
-      case "ERROR_OPERATION_NOT_ALLOWED":
-      case "ERROR_INVALID_EMAIL":
-      case "invalid-email":
-        error = "Email address is invalid.";
-        break;
-      default:
-        error = "Login failed. Please try again.";
-        break;
-    }
-    return error;
   }
 
 

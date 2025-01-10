@@ -1,175 +1,185 @@
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
-import 'package:TaklyAPP/features/auth/presentation/manager/cubit/auth_cubit.dart';
-import 'package:TaklyAPP/features/auth/presentation/views/widgets/show_password.dart';
+import 'package:TaklyAPP/features/auth/presentation/controller/cubit/auth_cubit.dart';
+import 'package:TaklyAPP/features/auth/presentation/views/forget_password.dart';
+import 'package:TaklyAPP/features/auth/presentation/views/register.dart';
+import 'package:TaklyAPP/features/home/presentation/views/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 class Login extends StatefulWidget {
-  const Login({
-    super.key,
-  });
+  const Login({super.key});
 
   @override
   State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
-  final emailController = TextEditingController();
-  final ValueNotifier<bool> isObscuredNotifier = ValueNotifier<bool>(true);
-  final passwordController = TextEditingController();
-  bool isobscure = true;
-  var cubit = Get.find<AuthCubit>();
+  final TextEditingController _loginEmailController = TextEditingController();
+  final TextEditingController _loginPasswordController =
+      TextEditingController();
+  bool _isobscure = true;
+  final _loginFormKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: BlocBuilder<AuthCubit, AuthState>(
-        bloc: cubit,
-        builder: (context, state) {
-          if (state is AuthFailure) {
-            return Center(
-              child: Obx(() {
-                return Text(
-                  state.failure.message,
-                  style: TextStyle(
-                    fontSize: Get.find<FontSizeController>().fontSize.value,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                );
-              }),
-            );
-          } else {
-            return SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: context.height * 0.15,
-                        ),
-                        Icon(
-                          Icons.chat,
-                          size:
-                              Get.find<FontSizeController>().fontSize.value * 5,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        Obx(() {
-                          return Text(
-                            'signIn'.tr,
-                            style: TextStyle(
-                              fontSize:
-                                  Get.find<FontSizeController>().fontSize.value,
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: SingleChildScrollView(
+          child: BlocConsumer<AuthCubit, AuthState>(
+            listener: (context, state) {
+              if (state.status == AuthStatus.authenticated) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const HomeView()));
+              }
+              if (state.status == AuthStatus.error) {
+                Get.snackbar('Error', state.failure!.message);
+              }
+            },
+            builder: (context, state) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Form(
+                  key: _loginFormKey,
+                  child: Column(
+                    children: [
+                      SizedBox(height: context.height * 0.15),
+                      Icon(
+                        Icons.chat,
+                        size: Get.find<FontSizeController>().fontSize.value * 5,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: 50),
+                      Obx(() {
+                        return Text(
+                          'signIn'.tr,
+                          style: TextStyle(
+                            fontSize:
+                                Get.find<FontSizeController>().fontSize.value,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 25),
+                      MyTextField(
+                        controller: _loginEmailController,
+                        obscure: false,
+                        type: "email".tr,
+                      ),
+                      const SizedBox(height: 20),
+                      MyTextField(
+                        controller: _loginPasswordController,
+                        type: 'Password',
+                        obscure: _isobscure,
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: !_isobscure,
+                            onChanged: (value) {
+                              setState(() {
+                                _isobscure = !_isobscure;
+                              });
+                            },
+                          ),
+                          const Text('Show Password'),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ForgetPasswordPage()),
                             ),
-                          );
-                        }),
-                        const SizedBox(
-                          height: 25,
-                        ),
-                        MyTextField(
-                            controller: emailController,
-                            obscure: false,
-                            type: "email".tr),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ValueListenableBuilder<bool>(
-                          valueListenable: isObscuredNotifier,
-                          builder: (context, isObscured, child) {
-                            return MyTextField(
-                              type: 'Password',
-                              controller: passwordController,
-                              obscure: isObscured,
-                            );
-                          },
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        ShowPassword(isLogin: true,isObscuredNotifier: isObscuredNotifier),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        state is Authloading
-                            ? const CircularProgressIndicator()
-                            : MyButton(
-                                name: "signIn".tr,
-                                onPressed: login,
-                              ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Obx(() {
+                            child: Obx(() {
                               return Text(
-                                'dontHaveAnAccount'.tr,
+                                'forgetPassword'.tr,
                                 style: TextStyle(
                                   fontSize: Get.find<FontSizeController>()
                                       .fontSize
                                       .value,
                                   color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               );
                             }),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Get.toNamed('/register');
-                              },
-                              child: Obx(() {
-                                return Text(
-                                  'signUp'.tr,
-                                  style: TextStyle(
-                                      fontSize: Get.find<FontSizeController>()
-                                          .fontSize
-                                          .value,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      BlocBuilder<AuthCubit, AuthState>(
+                        buildWhen: (previous, current) =>
+                            previous.status != current.status,
+                        builder: (context, state) {
+                          return state.status == AuthStatus.loading
+                              ? const CircularProgressIndicator()
+                              : MyButton(
+                                  name: "signIn".tr,
+                                  onPressed: () {
+                                    context.read<AuthCubit>().loginUser(
+                                          email:
+                                              _loginEmailController.text.trim(),
+                                          password: _loginPasswordController
+                                              .text
+                                              .trim(),
+                                        );
+                                  },
                                 );
-                              }),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Obx(() {
+                            return Text(
+                              'dontHaveAnAccount'.tr,
+                              style: TextStyle(
+                                fontSize: Get.find<FontSizeController>()
+                                    .fontSize
+                                    .value,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            );
+                          }),
+                          const SizedBox(width: 5),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Register(),
+                                ),
+                              );
+                            },
+                            child: Obx(() {
+                              return Text(
+                                'signUp'.tr,
+                                style: TextStyle(
+                                  fontSize: Get.find<FontSizeController>()
+                                      .fontSize
+                                      .value,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            );
-          }
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
-  }
-
-  void login() {
-    FocusScope.of(context).unfocus();
-
-    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      cubit.loginUser(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim());
-      emailController.clear();
-      passwordController.clear();
-    } else {
-      Get.snackbar("Error", "Please enter all the fields");
-    }
   }
 }

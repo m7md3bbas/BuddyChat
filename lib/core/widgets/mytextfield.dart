@@ -13,6 +13,7 @@ class MyTextField extends StatelessWidget {
     this.focusNode,
     this.suffixIcon,
     this.onTap,
+    this.errortext, this.validator,
   });
   final String type;
   final bool obscure;
@@ -22,15 +23,17 @@ class MyTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final Widget? suffixIcon;
   final void Function()? onTap;
-
+  final String? errortext;
+  final String? Function(String?)? validator;
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       onTap: onTap,
       focusNode: focusNode,
       onChanged: onChanged,
       controller: controller,
       obscureText: obscure,
+      validator: validator,
       style: TextStyle(
           color: Theme.of(context).colorScheme.primary,
           fontSize: Get.find<FontSizeController>().fontSize.value),
@@ -52,11 +55,11 @@ class MyTextField extends StatelessWidget {
         focusColor: Theme.of(context).colorScheme.secondary,
         filled: true,
         hintText: type,
+        errorText: errortext,
         suffixIcon: suffixIcon,
         hintStyle: TextStyle(
             color: Theme.of(context).colorScheme.primary,
             fontSize: Get.find<FontSizeController>().fontSize.value),
-        
       ),
     );
   }
