@@ -12,7 +12,12 @@
           "package_name": "com.example.chat_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "707164521377-vbmjri5ifnnv8msrfh29off8thehrqh9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCjAiRy3H9R7-860b-ROOHG1U6gKir0z2o"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707164521377-vbmjri5ifnnv8msrfh29off8thehrqh9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
@@ -31,7 +41,12 @@
           "package_name": "com.example.chatingapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "707164521377-vbmjri5ifnnv8msrfh29off8thehrqh9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCjAiRy3H9R7-860b-ROOHG1U6gKir0z2o"
@@ -39,7 +54,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707164521377-vbmjri5ifnnv8msrfh29off8thehrqh9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

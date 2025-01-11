@@ -1,5 +1,6 @@
 import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
+import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/features/auth/presentation/views/login.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
 import 'package:TaklyAPP/features/home/presentation/views/widgets/add_image.dart';
@@ -18,7 +19,7 @@ class BuildDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocProvider(
-      create: (context) => CubitConstractor.homeConstractorMethod()
+      create: (context) => locator<HomeCubit>()
         ..getname(email: FirebaseAuth.instance.currentUser!.email!),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,

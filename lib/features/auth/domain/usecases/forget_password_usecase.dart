@@ -5,6 +5,6 @@ class ForgetPasswordUsecase {
 
   ForgetPasswordUsecase({required this.authRepoIm});
   Future<void> call({required String email}) async {
-    await authRepoIm.forgetPassword(email:email);
+    await authRepoIm.sendPasswordResetEmail(email:email);
   }
 }

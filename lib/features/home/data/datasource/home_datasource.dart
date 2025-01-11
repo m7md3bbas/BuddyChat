@@ -7,6 +7,14 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class HomeDataSource {
+  static HomeDataSource? _instance;
+  HomeDataSource._();
+
+  static HomeDataSource getInstance() {
+    _instance ??= HomeDataSource._();
+    return _instance!;
+  }
+
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final ImagePicker imagePicker = ImagePicker();

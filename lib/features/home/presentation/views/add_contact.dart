@@ -1,5 +1,6 @@
 import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
+import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
@@ -46,7 +47,7 @@ class AddContact extends StatelessWidget {
         }),
       ),
       body: BlocProvider(
-        create: (context) => CubitConstractor.homeConstractorMethod(),
+        create: (context) => locator<HomeCubit>(),
         child: BlocConsumer<HomeCubit, HomeState>(
           listener: (context, state) {
             if (state is HomeError) {

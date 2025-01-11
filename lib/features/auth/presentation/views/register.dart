@@ -17,16 +17,29 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final TextEditingController _registerfNameController =
-      TextEditingController();
-  final TextEditingController _registerEmailController =
-      TextEditingController();
-  final TextEditingController _registerPasswordController =
-      TextEditingController();
-  final TextEditingController _registerConfirmPasswordController =
-      TextEditingController();
+  late final TextEditingController _registerfNameController;
+  late final TextEditingController _registerEmailController;
+  late final TextEditingController _registerPasswordController;
+  late final TextEditingController _registerConfirmPasswordController;
   bool _registerisobscure = true;
   final _registerFormKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    _registerfNameController = TextEditingController();
+    _registerEmailController = TextEditingController();
+    _registerPasswordController = TextEditingController();
+    _registerConfirmPasswordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _registerfNameController.dispose();
+    _registerEmailController.dispose();
+    _registerPasswordController.dispose();
+    _registerConfirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +106,6 @@ class _RegisterState extends State<Register> {
                                 type: 'Password',
                                 controller: _registerPasswordController,
                                 obscure: _registerisobscure,
-                                errortext: state.passwordError,
                               ),
                               MyTextField(
                                 type: 'confirm Password',

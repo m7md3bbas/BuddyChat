@@ -1,6 +1,7 @@
 
 import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
+import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/features/chat/data/datasource/chat_datasource.dart';
 import 'package:TaklyAPP/features/chat/domain/repoIm/chat_repo_imp.dart';
 import 'package:TaklyAPP/features/chat/domain/usecases/get_message_use_case.dart';
@@ -8,6 +9,7 @@ import 'package:TaklyAPP/features/chat/domain/usecases/send_message_usecase.dart
 import 'package:TaklyAPP/features/chat/presentation/manager/cubit/chat_cubit.dart';
 import 'package:TaklyAPP/features/chat/presentation/views/chat_page.dart';
 import 'package:TaklyAPP/features/home/domain/entities/home_entities.dart';
+import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
 import 'package:TaklyAPP/features/home/presentation/views/widgets/delete_contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,7 +69,7 @@ Widget buildContactCard(BuildContext context, Contact contact) {
             showDialog(
               context: context,
               builder: (con) => BlocProvider(
-                create: (context) => CubitConstractor.homeConstractorMethod()
+                create: (context) => locator<HomeCubit>()
                   ..deleteContact(contact.email!),
                 child: deleteConfirmationDialog(context, contact.email!),
               ),

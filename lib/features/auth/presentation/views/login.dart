@@ -17,11 +17,24 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController _loginEmailController = TextEditingController();
-  final TextEditingController _loginPasswordController =
-      TextEditingController();
+  late final TextEditingController _loginEmailController;
+  late final TextEditingController _loginPasswordController;
   bool _isobscure = true;
   final _loginFormKey = GlobalKey<FormState>();
+  @override
+  initState() {
+    _loginEmailController = TextEditingController();
+    _loginPasswordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    _loginEmailController.dispose();
+    _loginPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -172,6 +185,30 @@ class _LoginState extends State<Login> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 20),
+                      BlocConsumer<AuthCubit, AuthState>(
+                        listener: (context, state) {
+                          if (state.status == AuthStatus.authenticated) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomeView()));
+                          }
+                          if (state.status == AuthStatus.error) {
+                            Get.snackbar('Error', state.failure!.message);
+                            print(state.failure!.message);
+                          }
+                        },
+                        builder: (context, state) {
+                          return MyButton(
+                              name: "Sign In With Google",
+                              onPressed: () {
+                                context.read<AuthCubit>().googleLogin();
+                              });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      MyButton(name: "Sign In With Facebook", onPressed: () {}),
                     ],
                   ),
                 ),

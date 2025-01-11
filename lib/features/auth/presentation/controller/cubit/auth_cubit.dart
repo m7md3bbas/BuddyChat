@@ -3,9 +3,11 @@ import 'package:TaklyAPP/features/auth/data/datasource/auth_datasource.dart';
 import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
 import 'package:TaklyAPP/features/auth/domain/repoIm/repo_im.dart';
 import 'package:TaklyAPP/features/auth/domain/usecases/forget_password_usecase.dart';
+import 'package:TaklyAPP/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:TaklyAPP/features/auth/domain/usecases/login_usecase.dart';
 import 'package:TaklyAPP/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:TaklyAPP/features/auth/domain/usecases/register_usercase.dart';
+import 'package:TaklyAPP/features/auth/domain/usecases/reset_password_usecase.dart';
 import 'package:bloc/bloc.dart';
 
 // ignore: depend_on_referenced_packages
@@ -19,8 +21,11 @@ class AuthCubit extends Cubit<AuthState> {
   final ForgetPasswordUsecase forgetPasswordUsecase;
   final AuthRepoIm authRepoIm;
   late StreamSubscription<UserEntity?> _authStateSubscription;
-
+  final ResetPasswordUsecase resetPasswordUsecase;
+  final GoogleLoginUsecase googleLoginUsecase;
   AuthCubit({
+    required this.googleLoginUsecase,
+    required this.resetPasswordUsecase,
     required this.authRepoIm,
     required this.loginUsecase,
     required this.registerUsecase,
@@ -37,6 +42,19 @@ class AuthCubit extends Cubit<AuthState> {
         userEntity: user,
       ));
     });
+  }
+
+  Future<void> googleLogin() async {
+    emit(state.copyWith(status: AuthStatus.loading));
+    try {
+      await googleLoginUsecase.call();
+      emit(state.copyWith(status: AuthStatus.authenticated));
+    } catch (e) {
+      emit(state.copyWith(
+        status: AuthStatus.error,
+        failure: AuthExecption(e.toString()),
+      ));
+    }
   }
 
   Future<void> loginUser(

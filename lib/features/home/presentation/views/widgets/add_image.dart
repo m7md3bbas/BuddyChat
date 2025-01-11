@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
+import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class AddImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CubitConstractor.homeConstractorMethod()
+      create: (context) => locator<HomeCubit>()
         ..getImage(
             email: FirebaseAuth
                 .instance.currentUser!.email!), // Load initial image

@@ -13,7 +13,18 @@ class ForgetPasswordPage extends StatefulWidget {
 }
 
 class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
-  final emailController = TextEditingController();
+  late final TextEditingController _emailController;
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +64,24 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                   MyTextField(
                     type: "email".tr,
                     obscure: false,
-                    controller: emailController,
+                    controller: _emailController,
                   ),
                   const SizedBox(height: 20),
-                  BlocBuilder<AuthCubit, AuthState>(
+                  BlocConsumer<AuthCubit, AuthState>(
                     buildWhen: (previous, current) => previous != current,
+                    listener: (context, state) {
+                      if (state.status == AuthStatus.error) {
+                        Get.snackbar('Error', state.failure!.message);
+                      }
+                    },
                     builder: (context, state) {
                       return MyButton(
+                        
                         name: "send".tr,
                         onPressed: () {
                           context
                               .read<AuthCubit>()
-                              .forgetPassword(email: emailController.text);
+                              .forgetPassword(email: _emailController.text);
                         },
                       );
                     },

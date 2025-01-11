@@ -8,6 +8,11 @@ abstract class Repo {
   Future<Either<AuthExecption, UserEntity?>> register(
       {required String email, required String password});
   Future<Either<AuthExecption, void>> logout();
-  Future<Either<AuthExecption, void>> forgetPassword({required String email});
+  Future<Either<AuthExecption, void>> sendPasswordResetEmail(
+      {required String email});
+  Future<Either<AuthExecption, void>> resetPassword(
+      {required String code, required String newPassword});
+  Future<Either<AuthExecption,UserEntity?>> googleSignIn();
+
   Stream<UserEntity?> get authStateChange;
 }

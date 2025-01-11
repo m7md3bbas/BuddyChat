@@ -7,7 +7,7 @@ import 'package:dartz/dartz.dart';
 class HomeRepoImpl implements HomeRepo {
   final HomeDataSource dataSource;
 
-  HomeRepoImpl(this.dataSource);
+  HomeRepoImpl({required this.dataSource});
 
   @override
   Future<Either<Failure, void>> addContact(String name, String email) async {

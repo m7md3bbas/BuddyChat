@@ -42,10 +42,10 @@ class AuthRepoIm implements Repo {
   }
 
   @override
-  Future<Either<AuthExecption, void>> forgetPassword(
+  Future<Either<AuthExecption, void>> sendPasswordResetEmail(
       {required String email}) async {
     try {
-      return Right(await _dataSource.resetPassword(email: email));
+      return Right(await _dataSource.sendPasswordResetEmail(email: email));
     } on AuthExecption catch (e) {
       return Left(AuthExecption(e.message));
     }
@@ -53,4 +53,24 @@ class AuthRepoIm implements Repo {
 
   @override
   Stream<UserEntity?> get authStateChange => _dataSource.authStateChange;
+
+  @override
+  Future<Either<AuthExecption, void>> resetPassword(
+      {required String code, required String newPassword}) async {
+    try {
+      return Right(await _dataSource.resetPassword(
+          code: code, newPassword: newPassword));
+    } on AuthExecption catch (e) {
+      return Left(AuthExecption(e.message));
+    }
+  }
+
+  @override
+  Future<Either<AuthExecption, UserEntity?>> googleSignIn() async {
+    try {
+      return Right( await _dataSource.googleLogin());
+    } catch (e) {
+      return Left(AuthExecption(e.toString()));
+    }
+  }
 }

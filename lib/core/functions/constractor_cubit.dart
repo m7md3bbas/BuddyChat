@@ -18,18 +18,6 @@ import 'package:TaklyAPP/features/settings/domain/usecases/update_password_useca
 import 'package:TaklyAPP/features/settings/presentation/manager/cubit/settings_cubit.dart';
 
 class CubitConstractor {
-  static HomeCubit homeConstractorMethod() {
-    return HomeCubit(
-      AddNewContactUsecase(HomeRepoImpl(HomeDataSource())),
-      DeleteContactUsecase(HomeRepoImpl(HomeDataSource())),
-      GetUsersUsecase(HomeRepoImpl(HomeDataSource())),
-      GetNameUasecase(HomeRepoImpl(HomeDataSource())),
-      SaveImageUsecase(HomeRepoImpl(HomeDataSource())),
-      GetImageUsecase(HomeRepoImpl(HomeDataSource())),
-      PickImageUseCase(HomeRepoImpl(HomeDataSource())),
-    );
-  }
-
   static SettingsCubit settingContractorCubit() {
     return SettingsCubit(
       DeleteAccountUsecase(SettingRepoim(SettingDatasource())),
