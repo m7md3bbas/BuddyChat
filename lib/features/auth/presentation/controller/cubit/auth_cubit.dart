@@ -46,15 +46,17 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> googleLogin() async {
     emit(state.copyWith(status: AuthStatus.loading));
-    try {
-      await googleLoginUsecase.call();
-      emit(state.copyWith(status: AuthStatus.authenticated));
-    } catch (e) {
-      emit(state.copyWith(
+    var user = await googleLoginUsecase.call();
+    user.fold(
+      (failure) => emit(state.copyWith(
         status: AuthStatus.error,
-        failure: AuthExecption(e.toString()),
-      ));
-    }
+        failure: failure,
+      )),
+      (user) => emit(state.copyWith(
+        status: AuthStatus.authenticated,
+        userEntity: user,
+      )),
+    );
   }
 
   Future<void> loginUser(
@@ -86,21 +88,19 @@ class AuthCubit extends Cubit<AuthState> {
     required String confirmPassword,
     required String name,
   }) async {
-    if (email.isEmpty || password.isEmpty || name.isEmpty) {
+    if (email.isEmpty ||
+        password.isEmpty ||
+        name.isEmpty ||
+        confirmPassword.isEmpty) {
       emit(state.copyWith(
         status: AuthStatus.error,
-        failure: AuthExecption("Email and password are required."),
+        failure: AuthExecption("ALL Fields are required."),
       ));
+
       return;
     }
-    if (password != confirmPassword) {
-      emit(state.copyWith(
-        status: AuthStatus.error,
-        failure: AuthExecption("Passwords do not match."),
-      ));
-      return;
-    }
-    emit(state.copyWith(status: AuthStatus.loading));
+
+    emit(AuthState(status: AuthStatus.loading));
     final result = await registerUsecase(email: email, password: password);
     result.fold(
       (failure) => emit(state.copyWith(

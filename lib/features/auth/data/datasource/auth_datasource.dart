@@ -19,25 +19,40 @@ class AuthDatasource {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final ErrorHandler errorHandler;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-  GoogleSignInAccount? _user;
-  GoogleSignInAccount get user => _user!;
-  Future<UserEntity?> googleLogin() async {
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) return null;
-    _user = googleUser;
-    final googleAuth = await googleUser.authentication;
+  Future<UserEntity> googleLogin() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      if (googleUser == null) {
+        throw AuthExecption("Google Login canceled by the user.");
+      }
 
-    final userCredential = await _firebaseAuth.signInWithCredential(credential);
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-    return userCredential.user != null
-        ? Users.fromFirebase(userCredential.user!)
-        : null;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential =
+          await _firebaseAuth.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        // Successful login logic here
+        print("Google Login successful: ${userCredential.user!.email}");
+      }
+
+      return UserEntity(
+          id: userCredential.user!.uid,
+          email: userCredential.user!.email ?? "No Email Found");
+    } on FirebaseAuthException catch (e) {
+      var error = errorHandler.getAuthErrorMessage(e);
+      throw AuthExecption(error);
+    } catch (e) {
+      print(e);
+      throw AuthExecption("Google Login failed, Please try again.");
+    }
   }
 
   Stream<UserEntity?> get authStateChange {
@@ -72,7 +87,7 @@ class AuthDatasource {
           .createUserWithEmailAndPassword(email: email, password: password);
       final user = userCredential.user;
 
-      return UserEntity(id: user!.uid, email: user.email ?? "No Email Found");
+      return UserEntity(id: user!.uid, email: user.email!);
     } on FirebaseAuthException catch (e) {
       var error = errorHandler.getAuthErrorMessage(e);
       throw AuthExecption(error);

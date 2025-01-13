@@ -44,7 +44,7 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
             body: SafeArea(
@@ -57,9 +57,6 @@ class _RegisterState extends State<Register> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const HomeView()));
-                      }
-                      if (state.status == AuthStatus.error) {
-                        Get.snackbar('Error', state.failure!.message);
                       }
                     },
                     builder: (context, state) {
@@ -95,7 +92,7 @@ class _RegisterState extends State<Register> {
                               MyTextField(
                                 controller: _registerfNameController,
                                 obscure: false,
-                                type: "firstName".tr,
+                                type: "Name".tr,
                               ),
                               MyTextField(
                                 controller: _registerEmailController,
@@ -107,11 +104,7 @@ class _RegisterState extends State<Register> {
                                 controller: _registerPasswordController,
                                 obscure: _registerisobscure,
                               ),
-                              MyTextField(
-                                type: 'confirm Password',
-                                controller: _registerConfirmPasswordController,
-                                obscure: _registerisobscure,
-                              ),
+                             
                               Row(
                                 children: [
                                   Checkbox(
@@ -127,32 +120,18 @@ class _RegisterState extends State<Register> {
                                   const Spacer(),
                                 ],
                               ),
-                              BlocBuilder<AuthCubit, AuthState>(
-                                buildWhen: (previous, current) =>
-                                    previous != current,
-                                builder: (context, state) {
-                                  return state.status == AuthStatus.loading
-                                      ? const CircularProgressIndicator()
-                                      : MyButton(
-                                          name: "signUp".tr,
-                                          onPressed: () {
-                                            context
-                                                .read<AuthCubit>()
-                                                .registerUser(
-                                                  email:
-                                                      _registerEmailController
-                                                          .text,
-                                                  password:
-                                                      _registerPasswordController
-                                                          .text,
-                                                  name: _registerfNameController
-                                                      .text,
-                                                  confirmPassword:
-                                                      _registerConfirmPasswordController
-                                                          .text,
-                                                );
-                                          },
-                                        );
+                              MyButton(
+                                name: "signUp".tr,
+                                onPressed: () {
+                                  context.read<AuthCubit>().registerUser(
+                                        email: _registerEmailController.text,
+                                        password:
+                                            _registerPasswordController.text,
+                                        name: _registerfNameController.text,
+                                        confirmPassword:
+                                            _registerConfirmPasswordController
+                                                .text,
+                                      );
                                 },
                               ),
                               Row(

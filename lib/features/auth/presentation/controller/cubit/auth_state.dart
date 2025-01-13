@@ -37,25 +37,45 @@ extension AuthStatusX on AuthState {
 }
 
 class AuthState {
+  final String? nameError;
+  final String? emailError;
+  final String? passwordError;
+  final String? confirmPasswordError;
   final AuthStatus status;
   final UserEntity? userEntity;
   final AuthExecption? failure;
 
-  AuthState({required this.status, this.userEntity, this.failure});
+  AuthState(
+      {this.nameError,
+      this.emailError,
+      this.passwordError,
+      this.confirmPasswordError,
+      required this.status,
+      this.userEntity,
+      this.failure});
 
   AuthState copyWith({
+    String? nameError,
+    String? emailError,
+    String? passwordError,
+    String? confirmPasswordError,
     AuthStatus? status,
     UserEntity? userEntity,
     AuthExecption? failure,
   }) =>
       AuthState(
+          nameError: nameError ?? this.nameError,
+          emailError: emailError ?? this.emailError,
+          passwordError: passwordError ?? this.passwordError,
+          confirmPasswordError:
+              confirmPasswordError ?? this.confirmPasswordError,
           status: status ?? this.status,
           userEntity: userEntity ?? this.userEntity,
           failure: failure ?? this.failure);
 
   @override
   String toString() =>
-      'AuthState(status: $status, userEntity: $userEntity, failure: $failure, )';
+      'AuthState(status: $status, userEntity: $userEntity, failure: $failure, nameError: $nameError, emailError: $emailError, passwordError: $passwordError, confirmPasswordError: $confirmPasswordError)';
 
   @override
   bool operator ==(Object other) {
@@ -63,9 +83,20 @@ class AuthState {
     return other is AuthState &&
         other.status == status &&
         other.userEntity == userEntity &&
-        other.failure == failure;
+        other.failure == failure &&
+        other.nameError == nameError &&
+        other.emailError == emailError &&
+        other.passwordError == passwordError &&
+        other.confirmPasswordError == confirmPasswordError;
   }
 
   @override
-  int get hashCode => status.hashCode ^ userEntity.hashCode ^ failure.hashCode;
+  int get hashCode =>
+      status.hashCode ^
+      userEntity.hashCode ^
+      failure.hashCode ^
+      nameError.hashCode ^
+      emailError.hashCode ^
+      passwordError.hashCode ^
+      confirmPasswordError.hashCode;
 }

@@ -2,6 +2,7 @@ import 'package:TaklyAPP/features/auth/data/datasource/auth_datasource.dart';
 import 'package:TaklyAPP/features/auth/data/repo/repo.dart';
 import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
 import 'package:dartz/dartz.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthRepoIm implements Repo {
   final AuthDatasource _dataSource;
@@ -68,9 +69,9 @@ class AuthRepoIm implements Repo {
   @override
   Future<Either<AuthExecption, UserEntity?>> googleSignIn() async {
     try {
-      return Right( await _dataSource.googleLogin());
-    } catch (e) {
-      return Left(AuthExecption(e.toString()));
+      return Right(await _dataSource.googleLogin());
+    } on AuthExecption catch (e) {
+      return Left(AuthExecption(e.message));
     }
   }
 }

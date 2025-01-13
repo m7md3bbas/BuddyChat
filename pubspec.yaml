@@ -40,6 +40,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
+  flutter_facebook_auth: ^7.1.1
   flutter_localization: ^0.2.3
   flutter_localizations:
     sdk: flutter

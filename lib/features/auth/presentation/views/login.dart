@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
@@ -50,6 +52,9 @@ class _LoginState extends State<Login> {
               }
               if (state.status == AuthStatus.error) {
                 Get.snackbar('Error', state.failure!.message);
+              }
+              if (state.status == AuthStatus.loading) {
+                const Center(child: CircularProgressIndicator());
               }
             },
             builder: (context, state) {
@@ -129,20 +134,16 @@ class _LoginState extends State<Login> {
                         buildWhen: (previous, current) =>
                             previous.status != current.status,
                         builder: (context, state) {
-                          return state.status == AuthStatus.loading
-                              ? const CircularProgressIndicator()
-                              : MyButton(
-                                  name: "signIn".tr,
-                                  onPressed: () {
-                                    context.read<AuthCubit>().loginUser(
-                                          email:
-                                              _loginEmailController.text.trim(),
-                                          password: _loginPasswordController
-                                              .text
-                                              .trim(),
-                                        );
-                                  },
-                                );
+                          return MyButton(
+                            name: "signIn".tr,
+                            onPressed: () {
+                              context.read<AuthCubit>().loginUser(
+                                    email: _loginEmailController.text.trim(),
+                                    password:
+                                        _loginPasswordController.text.trim(),
+                                  );
+                            },
+                          );
                         },
                       ),
                       const SizedBox(height: 20),
@@ -186,30 +187,18 @@ class _LoginState extends State<Login> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      BlocConsumer<AuthCubit, AuthState>(
-                        listener: (context, state) {
-                          if (state.status == AuthStatus.authenticated) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const HomeView()));
-                          }
-                          if (state.status == AuthStatus.error) {
-                            Get.snackbar('Error', state.failure!.message);
-                            print(state.failure!.message);
-                          }
-                        },
-                        builder: (context, state) {
-                          return MyButton(
-                              name: "Sign In With Google",
-                              onPressed: () {
-                                context.read<AuthCubit>().googleLogin();
-                              });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      MyButton(name: "Sign In With Facebook", onPressed: () {}),
-                    ],
+                      MyButton(
+                          name: "Sign In With Google",
+                          onPressed: () async {
+                            final cubit = context.read<AuthCubit>();
+
+                            try {
+                              await cubit.googleLogin();
+                            } catch (e) {
+                              log("Google Login failed: $e");
+                            }
+                          }),
+                      ],
                   ),
                 ),
               );
