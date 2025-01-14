@@ -134,16 +134,20 @@ class _LoginState extends State<Login> {
                         buildWhen: (previous, current) =>
                             previous.status != current.status,
                         builder: (context, state) {
-                          return MyButton(
-                            name: "signIn".tr,
-                            onPressed: () {
-                              context.read<AuthCubit>().loginUser(
-                                    email: _loginEmailController.text.trim(),
-                                    password:
-                                        _loginPasswordController.text.trim(),
-                                  );
-                            },
-                          );
+                          return state.status == AuthStatus.loading
+                              ? const CircularProgressIndicator()
+                              : MyButton(
+                                  name: "signIn".tr,
+                                  onPressed: () {
+                                    context.read<AuthCubit>().loginUser(
+                                          email:
+                                              _loginEmailController.text.trim(),
+                                          password: _loginPasswordController
+                                              .text
+                                              .trim(),
+                                        );
+                                  },
+                                );
                         },
                       ),
                       const SizedBox(height: 20),
@@ -198,7 +202,7 @@ class _LoginState extends State<Login> {
                               log("Google Login failed: $e");
                             }
                           }),
-                      ],
+                    ],
                   ),
                 ),
               );

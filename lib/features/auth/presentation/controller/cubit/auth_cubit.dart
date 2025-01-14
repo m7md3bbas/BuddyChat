@@ -85,13 +85,9 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> registerUser({
     required String email,
     required String password,
-    required String confirmPassword,
     required String name,
   }) async {
-    if (email.isEmpty ||
-        password.isEmpty ||
-        name.isEmpty ||
-        confirmPassword.isEmpty) {
+    if (email.isEmpty || password.isEmpty || name.isEmpty) {
       emit(state.copyWith(
         status: AuthStatus.error,
         failure: AuthExecption("ALL Fields are required."),

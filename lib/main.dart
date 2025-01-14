@@ -55,13 +55,11 @@ class BuddyChat extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: Provider.of<ThemeProvider>(context).themeData,
         home: bloc.BlocListener<AuthCubit, AuthState>(
-          bloc: locator<AuthCubit>()..checkAuth(),
           listener: (context, state) {
             if (state.status == AuthStatus.authenticated) {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const HomeView()));
-            }
-            {
+            } else {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const Login()));
             }

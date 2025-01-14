@@ -48,7 +48,6 @@ class BuildDrawer extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   );
                 }),
-                currentAccountPicture: const AddImage(),
                 currentAccountPictureSize: const Size(130, 130)),
           ),
           ListTile(

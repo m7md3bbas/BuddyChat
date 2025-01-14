@@ -1,12 +1,12 @@
 class UserEntity {
   final String email;
   final String id;
-  final String? userName;
+  final String? name;
   final String? phone;
   final String? profilePic;
 
   UserEntity(
-      {this.userName,
+      {this.name,
       this.phone,
       this.profilePic,
       required this.email,

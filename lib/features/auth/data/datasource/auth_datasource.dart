@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthDatasource {
   static AuthDatasource? _instance;
+
   AuthDatasource._({required this.errorHandler});
 
   static AuthDatasource getInstance() {
@@ -18,6 +19,7 @@ class AuthDatasource {
   }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   final ErrorHandler errorHandler;
   Future<UserEntity> googleLogin() async {
     try {
@@ -50,14 +52,13 @@ class AuthDatasource {
       var error = errorHandler.getAuthErrorMessage(e);
       throw AuthExecption(error);
     } catch (e) {
-      print(e);
       throw AuthExecption("Google Login failed, Please try again.");
     }
   }
 
   Stream<UserEntity?> get authStateChange {
     return _firebaseAuth.authStateChanges().map((user) {
-      return user != null ? Users.fromFirebase(user) : null;
+      return user != null ? Users.fromFirebaseAuth(user) : null;
     });
   }
 
@@ -69,7 +70,7 @@ class AuthDatasource {
 
       final user = userCredential.user;
 
-      return UserEntity(id: user!.uid, email: user.email ?? "No Email Found");
+      return Users.fromFirebaseAuth(user!);
     } on FirebaseAuthException catch (e) {
       var error = errorHandler.getAuthErrorMessage(e);
       throw AuthExecption(error);
@@ -87,7 +88,7 @@ class AuthDatasource {
           .createUserWithEmailAndPassword(email: email, password: password);
       final user = userCredential.user;
 
-      return UserEntity(id: user!.uid, email: user.email!);
+      return Users.fromFirebaseAuth(user!);
     } on FirebaseAuthException catch (e) {
       var error = errorHandler.getAuthErrorMessage(e);
       throw AuthExecption(error);

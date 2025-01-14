@@ -20,7 +20,6 @@ class _RegisterState extends State<Register> {
   late final TextEditingController _registerfNameController;
   late final TextEditingController _registerEmailController;
   late final TextEditingController _registerPasswordController;
-  late final TextEditingController _registerConfirmPasswordController;
   bool _registerisobscure = true;
   final _registerFormKey = GlobalKey<FormState>();
   @override
@@ -28,7 +27,6 @@ class _RegisterState extends State<Register> {
     _registerfNameController = TextEditingController();
     _registerEmailController = TextEditingController();
     _registerPasswordController = TextEditingController();
-    _registerConfirmPasswordController = TextEditingController();
     super.initState();
   }
 
@@ -37,7 +35,6 @@ class _RegisterState extends State<Register> {
     _registerfNameController.dispose();
     _registerEmailController.dispose();
     _registerPasswordController.dispose();
-    _registerConfirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -104,7 +101,6 @@ class _RegisterState extends State<Register> {
                                 controller: _registerPasswordController,
                                 obscure: _registerisobscure,
                               ),
-                             
                               Row(
                                 children: [
                                   Checkbox(
@@ -128,9 +124,6 @@ class _RegisterState extends State<Register> {
                                         password:
                                             _registerPasswordController.text,
                                         name: _registerfNameController.text,
-                                        confirmPassword:
-                                            _registerConfirmPasswordController
-                                                .text,
                                       );
                                 },
                               ),

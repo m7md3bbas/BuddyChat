@@ -1,20 +1,32 @@
+import 'dart:developer';
+
 import 'package:TaklyAPP/features/auth/data/datasource/auth_datasource.dart';
+import 'package:TaklyAPP/features/auth/data/datasource/firebase_firestore_datasource.dart';
 import 'package:TaklyAPP/features/auth/data/repo/repo.dart';
 import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthRepoIm implements Repo {
   final AuthDatasource _dataSource;
+  final FirebaseFirestoreDatasource _firebaseFirestoreDatasource;
   AuthRepoIm(
     this._dataSource,
+    this._firebaseFirestoreDatasource,
   );
 
   @override
   Future<Either<AuthExecption, UserEntity?>> login(
       {required String email, required String password}) async {
     try {
-      return Right(await _dataSource.login(email: email, password: password));
+      final user = await _dataSource.login(email: email, password: password);
+      UserEntity verifyUser =
+          await _firebaseFirestoreDatasource.getUser(userEntity: user!);
+      if (verifyUser.id != user.id) {
+        log(verifyUser.email);
+        return Left(AuthExecption("User not found"));
+      }
+
+      return Right(user);
     } on AuthExecption catch (e) {
       return Left(AuthExecption(e.message));
     }
@@ -26,8 +38,11 @@ class AuthRepoIm implements Repo {
     required String password,
   }) async {
     try {
-      return Right(
-          await _dataSource.register(email: email, password: password));
+      final user = await _dataSource.register(email: email, password: password);
+      if (user != null) {
+        _firebaseFirestoreDatasource.createUser(userEntity: user);
+      }
+      return Right(user);
     } on AuthExecption catch (e) {
       return Left(AuthExecption(e.message));
     }
