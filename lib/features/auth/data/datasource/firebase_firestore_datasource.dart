@@ -13,7 +13,7 @@ class FirebaseFirestoreAuthDatasource {
   }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+   FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> createUser({
     required UserEntity userEntity,
@@ -29,9 +29,10 @@ class FirebaseFirestoreAuthDatasource {
     await _firestore
         .collection('users')
         .doc(userEntity.email)
-        .update(Users.toFirestore(UserEntity(
+        .set(Users.toFirestore(UserEntity(
           email: userEntity.email,
           name: userEntity.name,
+          profilePic: userEntity.profilePic,
         )));
   }
 

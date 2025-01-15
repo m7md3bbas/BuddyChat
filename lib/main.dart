@@ -42,8 +42,15 @@ class BuddyChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return bloc.BlocProvider(
-      create: (context) => locator<AuthCubit>()..checkAuth(),
+    return bloc.MultiBlocProvider(
+      providers: [
+        bloc.BlocProvider(
+          create: (context) => locator<AuthCubit>()..checkAuth(),
+        ),
+        bloc.BlocProvider(
+          create: (context) => locator<HomeCubit>(),
+        ),
+      ],
       child: GetMaterialApp(
         locale: LocalizationService.defaultLocale,
         translations: LocalizationService(),
@@ -61,10 +68,7 @@ class BuddyChat extends StatelessWidget {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => bloc.BlocProvider(
-                            create: (context) => locator<HomeCubit>(),
-                            child: const HomeView(),
-                          )));
+                      builder: (context) => const HomeView()));
             } else {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const Login()));

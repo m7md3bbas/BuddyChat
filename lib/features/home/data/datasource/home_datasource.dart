@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:TaklyAPP/features/home/data/model/home_model.dart';
+import 'package:TaklyAPP/core/constants/failures.dart';
+import 'package:TaklyAPP/features/auth/data/model/user.dart';
+import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -15,177 +17,105 @@ class HomeDataSource {
     return _instance!;
   }
 
-  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final ImagePicker imagePicker = ImagePicker();
 
-  Stream<List<ContactModel>> getUsers() {
-    final currentUser = firebaseAuth.currentUser;
+  Stream<List<UserEntity>> getUsers() {
+    final currentUser = _firebaseAuth.currentUser;
     if (currentUser == null) {
       return const Stream.empty();
     }
     try {
-      return firebaseFirestore
+      return _firebaseFirestore
           .collection("users")
-          .doc(currentUser.uid)
+          .doc(currentUser.email)
           .collection("Contacts")
           .orderBy('addedAt', descending: true)
           .snapshots()
           .map((snapshot) => snapshot.docs
-              .map((doc) => ContactModel.fromFirestore(doc.data()))
+              .map((doc) => Users.fromFirestore(doc.data()))
               .toList());
-    } on FirebaseException catch (e) {
-      Get.snackbar("Error", e.message ?? "An unknown error occurred");
-      return const Stream.empty();
+    } on Failure catch (e) {
+      throw GeneralFailure(e.message);
     }
   }
 
-  Future<ContactModel?> getUidByEmail(String? email) async {
-    if (email == null || email.isEmpty) {
-      Get.snackbar("Error", "Email is required");
-      return null;
-    }
+  Future<UserEntity?> getUidByEmail({required String email}) async {
     try {
-      final querySnapshot = await firebaseFirestore
+      final querySnapshot = await _firebaseFirestore
           .collection('users')
           .where('email', isEqualTo: email)
           .limit(1)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
-        final data = querySnapshot.docs.first.data();
-        return ContactModel(uid: data['uid']);
+        final user = querySnapshot.docs.first.data();
+        return Users.fromFirestore(user);
       } else {
-        Get.snackbar("Error", "User not found");
         return null;
       }
-    } on FirebaseException catch (e) {
-      Get.snackbar("Error", e.message ?? "An unknown error occurred");
-      return null;
+    } on Failure catch (e) {
+      return throw GeneralFailure(e.message);
     }
   }
 
-  Future<ContactModel> getname({required String email}) async {
-    final contact = await getUidByEmail(email);
-    final name = await firebaseFirestore
-        .collection('users')
-        .doc(contact!.uid)
-        .get()
-        .then((snapshot) => snapshot.data()!['name']);
-
-    return ContactModel(name: name);
-  }
-
-  Future<void> addContact({required String email, required String name}) async {
-    final currentUser = firebaseAuth.currentUser;
-    if (currentUser == null) {
-      Get.snackbar("Error", "User is not authenticated");
-      return;
-    }
-    if (email == currentUser.email) {
-      Get.snackbar("Error", "You cannot add yourself as a contact.");
-      return;
-    }
-
-    final contact = await getUidByEmail(email);
-    final contatName = await getname(email: currentUser.email!);
-    if (contact == null || contact.uid == null) {
-      Get.snackbar("Error", "Cannot add contact. User not found.");
-      return;
-    }
+  Future<void> addContact({required UserEntity contactUser}) async {
+    final currentUser = _firebaseAuth.currentUser;
+    final userFound = await getUidByEmail(email: contactUser.email!);
     try {
-      await firebaseFirestore
+      await _firebaseFirestore
           .collection("users")
-          .doc(currentUser.uid)
+          .doc(currentUser!.email)
           .collection("Contacts")
-          .doc(email)
-          .set({
-        "name": name,
-        "email": email,
-        "uid": contact.uid,
-        'addedAt': FieldValue.serverTimestamp(),
-      });
-
-      await firebaseFirestore
-          .collection("users")
-          .doc(contact.uid)
-          .collection("Contacts")
-          .doc(currentUser.email)
-          .set({
-        "name": contatName.name,
-        "email": currentUser.email,
-        "uid": currentUser.uid,
-        'addedAt': FieldValue.serverTimestamp(),
-      });
-      Get.snackbar("Success", "Contact added successfully");
-    } on FirebaseException catch (e) {
-      Get.snackbar("Error", e.message ?? "An unknown error occurred");
+          .doc(userFound!.email)
+          .set(Users.toFirestore(contactUser));
+    } on Failure catch (e) {
+      throw GeneralFailure(e.message);
     }
   }
 
   Future<void> removeContact(String email) async {
-    final currentUser = firebaseAuth.currentUser;
-    if (currentUser == null) {
-      Get.snackbar("Error", "User is not authenticated");
-      return;
-    }
+    final currentUser = _firebaseAuth.currentUser;
     try {
-      await firebaseFirestore
+      await _firebaseFirestore
           .collection("users")
-          .doc(currentUser.uid)
+          .doc(currentUser!.email)
           .collection("Contacts")
           .doc(email)
           .delete();
-    } on FirebaseException catch (e) {
-      Get.snackbar("Error", e.message ?? "An unknown error occurred");
+    } on Failure catch (e) {
+      throw GeneralFailure(e.message);
     }
   }
 
-  Future<ContactModel> getImage({required String email}) async {
-    final contact = await getUidByEmail(email);
-    final image = await firebaseFirestore
-        .collection('users')
-        .doc(contact!.uid)
-        .get()
-        .then((snapshot) => snapshot.data()!['image']);
-    return ContactModel(photoUrl: image);
-  }
-
-  Future<ContactModel> saveImage({required String image}) async {
-    final currentUser = firebaseAuth.currentUser;
-    if (currentUser == null) {
-      Get.snackbar("Error", "User is not authenticated");
-      return ContactModel();
-    }
+  Future<void> saveImage({required String image}) async {
+    final currentUser = _firebaseAuth.currentUser;
     try {
-      await firebaseFirestore
+      await _firebaseFirestore
           .collection("users")
-          .doc(currentUser.uid)
-          .update({"image": image});
-
-      return ContactModel(photoUrl: image);
-    } on FirebaseException catch (e) {
-      Get.snackbar("Error", e.message ?? "An unknown error occurred");
-      return ContactModel();
+          .doc(currentUser!.email)
+          .set(Users.toFirestore(UserEntity(profilePic: image)));
+    } on GeneralFailure catch (e) {
+      throw GeneralFailure(e.message);
     }
   }
 
-  Future<ContactModel> pickImage() async {
+  Future<void> pickImage() async {
     try {
       final pickedFile = await imagePicker.pickImage(
           source: ImageSource.gallery,
           imageQuality: 50,
           maxWidth: 800,
           maxHeight: 800);
-      if (pickedFile == null) {
-        return ContactModel();
-      }
 
+      if (pickedFile == null) {
+        throw GeneralFailure("No image selected");
+      }
       final bytes = await pickedFile.readAsBytes();
       final String base64Image = base64Encode(bytes);
-      saveImage(image: base64Image);
-      return ContactModel(photoUrl: base64Image);
-    } catch (e) {
-      throw Exception("Failed to pick image: $e");
+      await saveImage(image: base64Image);
+    } on GeneralFailure catch (e) {
+      throw GeneralFailure("Failed to pick image");
     }
   }
 }

@@ -1,21 +1,19 @@
-
-import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/functions/locator.dart';
+import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
 import 'package:TaklyAPP/features/chat/data/datasource/chat_datasource.dart';
 import 'package:TaklyAPP/features/chat/domain/repoIm/chat_repo_imp.dart';
 import 'package:TaklyAPP/features/chat/domain/usecases/get_message_use_case.dart';
 import 'package:TaklyAPP/features/chat/domain/usecases/send_message_usecase.dart';
 import 'package:TaklyAPP/features/chat/presentation/manager/cubit/chat_cubit.dart';
 import 'package:TaklyAPP/features/chat/presentation/views/chat_page.dart';
-import 'package:TaklyAPP/features/home/domain/entities/home_entities.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
 import 'package:TaklyAPP/features/home/presentation/views/widgets/delete_contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
-Widget buildContactCard(BuildContext context, Contact contact) {
+Widget buildContactCard(BuildContext context, UserEntity contact) {
   return GestureDetector(
     onTap: () {
       Get.to(() => ChatPage(
@@ -29,7 +27,7 @@ Widget buildContactCard(BuildContext context, Contact contact) {
                 ),
               ),
             ),
-            receiverId: contact.uid!,
+            receiverId: contact.id!,
             name: contact.name!,
           ));
     },
@@ -40,8 +38,11 @@ Widget buildContactCard(BuildContext context, Contact contact) {
         color: Theme.of(context).colorScheme.secondary,
       ),
       child: ListTile(
-        leading:
-            Icon(Icons.person, color: Theme.of(context).colorScheme.primary,size: context.width * 0.1,),
+        leading: Icon(
+          Icons.person,
+          color: Theme.of(context).colorScheme.primary,
+          size: context.width * 0.1,
+        ),
         title: Obx(() {
           return Text(
             contact.name!,
@@ -69,8 +70,7 @@ Widget buildContactCard(BuildContext context, Contact contact) {
             showDialog(
               context: context,
               builder: (con) => BlocProvider(
-                create: (context) => locator<HomeCubit>()
-                 ,
+                create: (context) => locator<HomeCubit>(),
                 child: deleteConfirmationDialog(context, contact.email!),
               ),
             );

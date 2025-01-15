@@ -10,7 +10,11 @@ import 'package:TaklyAPP/features/auth/domain/usecases/reset_password_usecase.da
 import 'package:TaklyAPP/features/auth/presentation/controller/cubit/auth_cubit.dart';
 import 'package:TaklyAPP/features/home/data/datasource/home_datasource.dart';
 import 'package:TaklyAPP/features/home/domain/repoIm/home_repoim.dart';
+import 'package:TaklyAPP/features/home/domain/usecases/add_contact_usercase.dart';
 import 'package:TaklyAPP/features/home/domain/usecases/get_current_user.dart';
+import 'package:TaklyAPP/features/home/domain/usecases/get_users_usecase.dart';
+import 'package:TaklyAPP/features/home/domain/usecases/pick_image_usecase.dart';
+import 'package:TaklyAPP/features/home/domain/usecases/remove_contact_usecase.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -48,7 +52,20 @@ void setupServiceLocator() {
       firebaseFirestoreDataSource: locator<FirebaseFirestoreAuthDatasource>()));
   locator.registerFactory<GetCurrentUser>(
       () => GetCurrentUser(homeRepoImpl: locator<HomeRepoImpl>()));
+  locator.registerFactory<PickImageUsecase>(
+      () => PickImageUsecase(homeRepoImpl: locator<HomeRepoImpl>()));
+  locator.registerFactory<AddContactUsercase>(
+      () => AddContactUsercase(homeRepoIm: locator<HomeRepoImpl>()));
+  locator.registerFactory<GetUsersUsecase>(
+      () => GetUsersUsecase(homeRepoImpl: locator<HomeRepoImpl>()));
+  locator.registerFactory<RemoveContactUsecase>(
+      () => RemoveContactUsecase(homeRepoImpl: locator<HomeRepoImpl>()));
+
   locator.registerLazySingleton(() => HomeCubit(
+        addContactUsecase: locator<AddContactUsercase>(),
+        getUsersUsecase: locator<GetUsersUsecase>(),
+        removeContactUsecase: locator<RemoveContactUsecase>(),
+        pickImageUsecase: locator<PickImageUsecase>(),
         getCurrentUser: locator<GetCurrentUser>(),
       ));
 }

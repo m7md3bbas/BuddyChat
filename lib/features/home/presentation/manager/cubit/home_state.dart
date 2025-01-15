@@ -1,6 +1,5 @@
 import 'package:TaklyAPP/core/constants/failures.dart';
 import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
-import 'package:TaklyAPP/features/home/data/model/home_model.dart';
 
 enum HomeStatus { initial, loading, loaded, error }
 
@@ -12,7 +11,7 @@ extension HomeStateX on HomeStatus {
 }
 
 class HomeState {
-  final List<ContactModel>? contacts;
+  final List<UserEntity>? contacts;
   final UserEntity? user;
   final HomeStatus status;
   final Failure? failure;
@@ -22,7 +21,7 @@ class HomeState {
   HomeState copyWith(
       {UserEntity? user,
       Failure? failure,
-      List<ContactModel>? contacts,
+      List<UserEntity>? contacts,
       HomeStatus? status}) {
     return HomeState(
       user: user ?? this.user,

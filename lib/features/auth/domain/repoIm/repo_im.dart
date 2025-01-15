@@ -22,7 +22,7 @@ class AuthRepoIm implements Repo {
       UserEntity verifyUser =
           await _firebaseFirestoreDatasource.getCurrentUser();
       if (verifyUser.id != user!.id) {
-        log(verifyUser.email);
+        log(verifyUser.email!);
         return Left(AuthExecption("User not found"));
       }
 
