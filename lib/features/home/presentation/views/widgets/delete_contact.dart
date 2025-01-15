@@ -39,10 +39,7 @@ Widget deleteConfirmationDialog(BuildContext context, String email) {
         }),
       ),
       TextButton(
-        onPressed: () {
-          Navigator.pop(context); // Close the dialog
-          BlocProvider.of<HomeCubit>(context).deleteContact(email);
-        },
+        onPressed: () {},
         child: Obx(() {
           return Text(
             'delete'.tr,

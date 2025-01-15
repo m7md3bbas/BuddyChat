@@ -4,6 +4,7 @@ import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
+import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -50,13 +51,13 @@ class AddContact extends StatelessWidget {
         create: (context) => locator<HomeCubit>(),
         child: BlocConsumer<HomeCubit, HomeState>(
           listener: (context, state) {
-            if (state is HomeError) {
+            if (state.status == HomeStatus.error) {
               Get.snackbar(
                 "Error",
-                state.failure.message,
+                state.failure!.message,
               );
             }
-            if (state is HomeLoaded) {
+            if (state.status == HomeStatus.loaded) {
               fNameController.clear();
               lNameController.clear();
               emailController.clear();
@@ -113,18 +114,10 @@ class AddContact extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  state is HomeLoading
-                      ? const CircularProgressIndicator()
-                      : MyButton(
-                          name: "save".tr,
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            final String fullName =
-                                "${fNameController.text.trim()} ${lNameController.text.trim()}";
-                            BlocProvider.of<HomeCubit>(context).addContact(
-                                fullName, emailController.text.trim());
-                          },
-                        ),
+                  MyButton(
+                    name: "save".tr,
+                    onPressed: () {},
+                  ),
                 ],
               ),
             ),

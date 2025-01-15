@@ -5,6 +5,7 @@ import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/core/themes/theme_provider.dart';
 import 'package:TaklyAPP/features/auth/presentation/controller/cubit/auth_cubit.dart';
 import 'package:TaklyAPP/features/auth/presentation/views/login.dart';
+import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
 import 'package:TaklyAPP/features/home/presentation/views/home_view.dart';
 import 'package:TaklyAPP/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -57,8 +58,13 @@ class BuddyChat extends StatelessWidget {
         home: bloc.BlocListener<AuthCubit, AuthState>(
           listener: (context, state) {
             if (state.status == AuthStatus.authenticated) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const HomeView()));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => bloc.BlocProvider(
+                            create: (context) => locator<HomeCubit>(),
+                            child: const HomeView(),
+                          )));
             } else {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const Login()));

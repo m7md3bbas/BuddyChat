@@ -70,7 +70,7 @@ Widget buildContactCard(BuildContext context, Contact contact) {
               context: context,
               builder: (con) => BlocProvider(
                 create: (context) => locator<HomeCubit>()
-                  ..deleteContact(contact.email!),
+                 ,
                 child: deleteConfirmationDialog(context, contact.email!),
               ),
             );

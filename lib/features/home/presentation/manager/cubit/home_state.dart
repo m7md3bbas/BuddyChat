@@ -1,25 +1,52 @@
-part of 'home_cubit.dart';
+import 'package:TaklyAPP/core/constants/failures.dart';
+import 'package:TaklyAPP/features/auth/domain/entities/user_entity.dart';
+import 'package:TaklyAPP/features/home/data/model/home_model.dart';
 
-@immutable
-sealed class HomeState {}
+enum HomeStatus { initial, loading, loaded, error }
 
-final class HomeInitial extends HomeState {}
+extension HomeStateX on HomeStatus {
+  bool get isInitial => this == HomeStatus.initial;
+  bool get isLoading => this == HomeStatus.loading;
+  bool get isLoaded => this == HomeStatus.loaded;
+  bool get isError => this == HomeStatus.error;
+}
 
-final class HomeLoading extends HomeState {}
-
-final class HomeLoaded extends HomeState {
+class HomeState {
   final List<ContactModel>? contacts;
-  final ContactModel? contact;
-  HomeLoaded(this.contacts, {required this.contact});
-}
+  final UserEntity? user;
+  final HomeStatus status;
+  final Failure? failure;
 
-final class HomeError extends HomeState {
-  final Failure failure;
-  HomeError({required this.failure});
-}
+  HomeState({this.user, this.failure, this.contacts, required this.status});
 
-class HomeImagePicked extends HomeState {
-  final ContactModel? contact;
+  HomeState copyWith(
+      {UserEntity? user,
+      Failure? failure,
+      List<ContactModel>? contacts,
+      HomeStatus? status}) {
+    return HomeState(
+      user: user ?? this.user,
+      failure: failure ?? this.failure,
+      contacts: contacts ?? this.contacts,
+      status: status ?? this.status,
+    );
+  }
 
-  HomeImagePicked({required this.contact});
+  @override
+  String toString() =>
+      'HomeState(contact: $contacts, status: $status, failure: $failure, user: $user)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is HomeState &&
+        other.contacts == contacts &&
+        other.status == status &&
+        other.failure == failure &&
+        other.user == user;
+  }
+
+  @override
+  int get hashCode => contacts.hashCode ^ status.hashCode ^ failure.hashCode ^ user.hashCode;
 }

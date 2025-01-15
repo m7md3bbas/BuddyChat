@@ -28,7 +28,7 @@ class ErrorHandler{
       case 'user-token-expired':
         return 'Your session has expired. Please log in again.';
       case 'invalid-credential':
-        return 'The provided credentials are incorrect or have expired.';
+        return 'The provided credentials are incorrect.';
       case 'account-exists-with-different-credential':
         return 'An account already exists with this email but using a different sign-in provider.';
       case 'requires-recent-login':

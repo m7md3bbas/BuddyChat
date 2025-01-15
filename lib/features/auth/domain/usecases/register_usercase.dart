@@ -11,8 +11,10 @@ class RegisterUsecase {
   Future<Either<AuthExecption, UserEntity?>> call({
     required String email,
     required String password,
+    required String name,
   }) async {
     return await authRepoIm.register(
+      name: name,
       email: email,
       password: password,
     );

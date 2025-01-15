@@ -6,7 +6,7 @@ abstract class Repo {
   Future<Either<AuthExecption, UserEntity?>> login(
       {required String email, required String password});
   Future<Either<AuthExecption, UserEntity?>> register(
-      {required String email, required String password});
+      {required String email, required String password , required String name});
   Future<Either<AuthExecption, void>> logout();
   Future<Either<AuthExecption, void>> sendPasswordResetEmail(
       {required String email});

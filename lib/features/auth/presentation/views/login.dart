@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/widgets/mybutton.dart';
 import 'package:TaklyAPP/core/widgets/mytextfield.dart';
+import 'package:TaklyAPP/core/widgets/snack_bar.dart';
 import 'package:TaklyAPP/features/auth/presentation/controller/cubit/auth_cubit.dart';
 import 'package:TaklyAPP/features/auth/presentation/views/forget_password.dart';
 import 'package:TaklyAPP/features/auth/presentation/views/register.dart';
@@ -51,7 +52,7 @@ class _LoginState extends State<Login> {
                     MaterialPageRoute(builder: (context) => const HomeView()));
               }
               if (state.status == AuthStatus.error) {
-                Get.snackbar('Error', state.failure!.message);
+                GetSnacbars.errorSnackbar(state.failure!.message);
               }
               if (state.status == AuthStatus.loading) {
                 const Center(child: CircularProgressIndicator());

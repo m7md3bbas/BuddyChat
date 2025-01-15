@@ -1,10 +1,9 @@
-import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/features/auth/presentation/controller/cubit/auth_cubit.dart';
 import 'package:TaklyAPP/features/auth/presentation/views/login.dart';
-import 'package:TaklyAPP/features/home/presentation/views/widgets/add_image.dart';
+import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
+import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 
 class BuildDrawer extends StatelessWidget {
   const BuildDrawer({
@@ -24,77 +23,69 @@ class BuildDrawer extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.secondary,
                 ),
-                accountName: Obx(() {
-                  return Text(
-                    " state.contact!.name!",
+                accountName: BlocBuilder<HomeCubit, HomeState>(
+                  buildWhen: (previous, current) =>
+                      previous.user != current.user,
+                  builder: (context, state) => Text(
+                    state.user?.name ?? "null",
                     style: TextStyle(
-                      fontSize: Get.find<FontSizeController>().fontSize.value,
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                  );
-                }),
-                accountEmail: Obx(() {
-                  return Text(
-                    "state.contact!.email!",
-                    style: TextStyle(
-                      fontSize: Get.find<FontSizeController>().fontSize.value,
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w300,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  );
-                }),
+                  ),
+                ),
+                accountEmail: BlocBuilder<HomeCubit, HomeState>(
+                  builder: (context, state) {
+                    return Text(
+                      state.user!.email,
+                      style: TextStyle(
+                        
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w300,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  },
+                ),
                 currentAccountPictureSize: const Size(130, 130)),
           ),
           ListTile(
             leading: const Icon(Icons.home),
-            title: Obx(() {
-              return Text(
-                "home".tr,
-                style: TextStyle(
-                  fontSize: Get.find<FontSizeController>().fontSize.value,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            }),
-            onTap: () {
-              Get.toNamed("/home");
-            },
+            title: Text(
+              "home",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {},
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: Obx(() {
-              return Text(
-                "settings".tr,
-                style: TextStyle(
-                  fontSize: Get.find<FontSizeController>().fontSize.value,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            }),
+            title: Text(
+              "settings",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             onTap: () {},
           ),
           const Spacer(),
           ListTile(
             leading: const Icon(Icons.logout),
-            title: Obx(() {
-              return Text(
-                "logout".tr,
-                style: TextStyle(
-                  fontSize: Get.find<FontSizeController>().fontSize.value,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            }),
+            title: Text(
+              "logout",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             onTap: () async {
-              BlocProvider.of<AuthCubit>(context).logoutUser();
+              context.read<AuthCubit>().logoutUser();
               Future.delayed(const Duration(seconds: 1), () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => const Login()));

@@ -30,7 +30,7 @@ class Users extends UserEntity {
       id: user.uid,
     );
   }
-  static Map<String, dynamic> toFirestore(Users user) {
+  static Map<String, dynamic> toFirestore(UserEntity user) {
     return {
       'email': user.email,
       'id': user.id,

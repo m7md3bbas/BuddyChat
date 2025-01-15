@@ -8,7 +8,7 @@ import 'package:dartz/dartz.dart';
 
 class AuthRepoIm implements Repo {
   final AuthDatasource _dataSource;
-  final FirebaseFirestoreDatasource _firebaseFirestoreDatasource;
+  final FirebaseFirestoreAuthDatasource _firebaseFirestoreDatasource;
   AuthRepoIm(
     this._dataSource,
     this._firebaseFirestoreDatasource,
@@ -20,8 +20,8 @@ class AuthRepoIm implements Repo {
     try {
       final user = await _dataSource.login(email: email, password: password);
       UserEntity verifyUser =
-          await _firebaseFirestoreDatasource.getUser(userEntity: user!);
-      if (verifyUser.id != user.id) {
+          await _firebaseFirestoreDatasource.getCurrentUser();
+      if (verifyUser.id != user!.id) {
         log(verifyUser.email);
         return Left(AuthExecption("User not found"));
       }
@@ -36,12 +36,15 @@ class AuthRepoIm implements Repo {
   Future<Either<AuthExecption, UserEntity?>> register({
     required String email,
     required String password,
+    required String name,
   }) async {
     try {
-      final user = await _dataSource.register(email: email, password: password);
-      if (user != null) {
-        _firebaseFirestoreDatasource.createUser(userEntity: user);
-      }
+      final UserEntity user =
+          await _dataSource.register(email: email, password: password);
+
+      _firebaseFirestoreDatasource.createUser(
+          userEntity: UserEntity(email: email, name: name, id: user.id));
+
       return Right(user);
     } on AuthExecption catch (e) {
       return Left(AuthExecption(e.message));

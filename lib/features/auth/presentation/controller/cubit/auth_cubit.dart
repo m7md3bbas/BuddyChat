@@ -97,7 +97,8 @@ class AuthCubit extends Cubit<AuthState> {
     }
 
     emit(AuthState(status: AuthStatus.loading));
-    final result = await registerUsecase(email: email, password: password);
+    final result =
+        await registerUsecase(email: email, password: password, name: name);
     result.fold(
       (failure) => emit(state.copyWith(
         status: AuthStatus.error,

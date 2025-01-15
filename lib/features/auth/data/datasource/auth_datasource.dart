@@ -79,7 +79,7 @@ class AuthDatasource {
     }
   }
 
-  Future<UserEntity?> register({
+  Future<UserEntity> register({
     required String email,
     required String password,
   }) async {

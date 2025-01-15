@@ -1,6 +1,6 @@
 class UserEntity {
   final String email;
-  final String id;
+  final String? id;
   final String? name;
   final String? phone;
   final String? profilePic;
@@ -10,5 +10,5 @@ class UserEntity {
       this.phone,
       this.profilePic,
       required this.email,
-      required this.id});
+       this.id});
 }

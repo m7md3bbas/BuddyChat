@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'package:TaklyAPP/core/functions/constractor_cubit.dart';
 import 'package:TaklyAPP/core/functions/font_size_controller.dart';
 import 'package:TaklyAPP/core/functions/locator.dart';
 import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_cubit.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:TaklyAPP/features/home/presentation/manager/cubit/home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -16,17 +15,14 @@ class AddImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => locator<HomeCubit>()
-        ..getImage(
-            email: FirebaseAuth
-                .instance.currentUser!.email!), // Load initial image
+      create: (context) => locator<HomeCubit>(), // Load initial image
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
-          if (state is HomeError) {
+          if (state.status == HomeStatus.error) {
             return Center(
               child: Obx(() {
                 return Text(
-                  state.failure.message,
+                  state.failure!.message,
                   style: TextStyle(
                     fontSize: Get.find<FontSizeController>().fontSize.value,
                     color: Theme.of(context).colorScheme.primary,
@@ -68,10 +64,7 @@ class AddImage extends StatelessWidget {
                                 ),
                               );
                             }),
-                            onTap: () {
-                              BlocProvider.of<HomeCubit>(context).pickImage();
-                              Navigator.pop(context);
-                            },
+                            onTap: () {},
                           ),
                           ListTile(
                             title: Obx(() {
@@ -95,17 +88,17 @@ class AddImage extends StatelessWidget {
                 },
               );
             },
-            child: CircleAvatar(
-              backgroundImage: state is HomeImagePicked &&
-                      state.contact!.imageUrl != null &&
-                      state.contact!.imageUrl!.isNotEmpty
-                  ? MemoryImage(base64Decode(state.contact!.imageUrl!))
-                  : state is HomeLoaded &&
-                          state.contact!.imageUrl != null &&
-                          state.contact!.imageUrl!.isNotEmpty
-                      ? MemoryImage(base64Decode(state.contact!.imageUrl!))
-                      : null,
-            ),
+            // child: CircleAvatar(
+            //   backgroundImage: state is HomeImagePicked &&
+            //           state.contact!.imageUrl != null &&
+            //           state.contact!.imageUrl!.isNotEmpty
+            //       ? MemoryImage(base64Decode(state.contact!.imageUrl!))
+            //       : state is HomeLoaded &&
+            //               state.contact!.imageUrl != null &&
+            //               state.contact!.imageUrl!.isNotEmpty
+            //           ? MemoryImage(base64Decode(state.contact!.imageUrl!))
+            //           : null,
+            // ),
           );
         },
       ),

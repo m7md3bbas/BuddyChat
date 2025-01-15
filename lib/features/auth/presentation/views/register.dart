@@ -123,7 +123,8 @@ class _RegisterState extends State<Register> {
                                         email: _registerEmailController.text,
                                         password:
                                             _registerPasswordController.text,
-                                        name: _registerfNameController.text,
+                                        name: _registerfNameController
+                                            .text.capitalizeFirst!,
                                       );
                                 },
                               ),
